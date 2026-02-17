@@ -34,9 +34,10 @@ body {
     align-items: center;
     padding: 5px;
     font-size: 24px;
+    overflow-x: auto;
 }
 
-.button, #clear, #plus, #minus, #times, #equal, #slash {
+.button, .operator, #clear, #equal {
     height: 40px;
     width: 40px;
 }
