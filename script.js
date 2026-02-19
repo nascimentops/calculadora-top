@@ -1,60 +1,57 @@
-const buttons = document.querySelectorAll(".button");
-const display = document.querySelector(".display");
-const operators = document.querySelectorAll(".operator");
-const clear = document.querySelector("#clear");
-const equal = document.querySelector("#equal")
-
-let number1 = "";
-let number2 = "";
+let currentNumber = "";
+let accumulator = "";
 let operator = "";
 
-for (let i = 0; i < buttons.length; i++) {
-    buttons[i].addEventListener("click", (e) => {
-        number1 += e.target.textContent;
-        display.textContent = number1;
+const numberButtons = document.querySelectorAll(".number");
+for (let i = 0; i < numberButtons.length; i++) {
+    numberButtons[i].addEventListener("click", (e) => {
+        currentNumber += e.target.textContent;
+        changeDisplayContent(currentNumber);
     });
 };
 
-clear.addEventListener("click", () => {
-    number1 = "";
-    number2 = "";
-    display.textContent = "";
-    operator = "";
-});
-
-equal.addEventListener("click", () => {
-    if (!number1 || !number2 || !operator) return;
-    number2 = String(operate(operator, Number(number2), Number(number1)));
-    number1 = "";
-    if (number2.length >= 15 && number2.split("").includes(".")){
-        display.textContent = Number(number2).toFixed(5);
+const display = document.querySelector(".display");
+function changeDisplayContent(content) {
+    if (content.length >= 15 && content.includes(".")){
+        display.textContent = Number(content).toFixed(5);
     } else {
-    display.textContent = number2;
-    }
-    number2 = "";
-})
+    display.textContent = content;
+    };
+}
 
+const operators = document.querySelectorAll(".operator");
 for (let i = 0; i < operators.length; i++){
     operators[i].addEventListener("click", (e) => {
-        if (!number2 && number1){
-            number2 = number1;
-            number1 = "";
-            display.textContent = number1;
-            operator = e.target.textContent;
-        } else if (number1) {
-            number2 = String(operate(operator, Number(number2), Number(number1)));
-            number1 = "";
-            if (number2.length >= 15 && number2.split("").includes(".")){
-                display.textContent = Number(number2).toFixed(5);
-            } else {
-                display.textContent = number2;
-            }
-            operator = e.target.textContent;
+        const clickedOperator = e.target.textContent;
+        if (!accumulator && currentNumber){
+            accumulator = currentNumber;
+            currentNumber = "";
+            changeDisplayContent(currentNumber);
+        } else if (currentNumber) {
+            operationResult();
+            changeDisplayContent(accumulator);
         } else {
-            operator = e.target.textContent;
+            changeDisplayContent("");
         }
+        changeOperator(clickedOperator);
     })
 }
+function changeOperator(newOperator) {
+    operator = newOperator;
+};
+
+const clear = document.querySelector("#clear");
+clear.addEventListener("click", resetNumbersAndOperator);
+
+
+const equal = document.querySelector("#equal")
+equal.addEventListener("click", () => {
+    if (!currentNumber || !accumulator || !operator) return;
+    operationResult();
+    changeDisplayContent(accumulator);
+})
+
+
 
 function add (a, b) {
     return a + b;
@@ -76,6 +73,8 @@ function divide(a, b) {
 };
 
 function operate(operator, num1, num2){
+    num1 = Number(num1);
+    num2 = Number(num2);
     switch (operator) {
         case "+":
             return add(num1, num2);
@@ -87,3 +86,22 @@ function operate(operator, num1, num2){
             return divide(num1, num2);
     };
 };
+
+function resetNumbersAndOperator(){
+    currentNumber = "";
+    accumulator = "";
+    operator = "";
+    changeDisplayContent("");
+}
+
+function operationResult(){
+    const result = operate(operator, accumulator, currentNumber);
+
+    if (result === "ERROR"){
+        resetNumbersAndOperator();
+        changeDisplayContent("ERROR");
+        return;
+    }
+    accumulator = String(result);
+    currentNumber = "";
+}

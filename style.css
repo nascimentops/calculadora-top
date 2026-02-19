@@ -37,7 +37,7 @@ body {
     overflow-x: auto;
 }
 
-.button, .operator, #clear, #equal {
+.number, .operator, #clear, #equal {
     height: 40px;
     width: 40px;
 }
